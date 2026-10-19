@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boiler Efficiency Tool</title>
+  <meta name="description" content="Boiler efficiency (IS 8753 / BEE indirect and direct methods) and daily, monthly and yearly emissions calculator for Indian MSMEs.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C0392B'/><path d='M16 6c3 5 7 8 7 13a7 7 0 0 1-14 0c0-3 2-5 3-7 1 2 2 3 3 3 0-3-1-6 1-9z' fill='%23fff'/></svg>">
+  <script src="assets/vendor/plotly.min.js" defer></script>
+  <script type="module" src="assets/js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div>
+        <h1>Boiler Efficiency &amp; Emissions Tool</h1>
+        <p class="sub">For MSME boilers, thermic fluid heaters and hot water generators in India. Indirect (heat loss) method per IS 8753 / BEE, plus direct method.</p>
+      </div>
+      <div class="actions no-print">
+        <button type="button" class="btn ghost" id="btn-sample">Load sample</button>
+        <button type="button" class="btn ghost" id="btn-save">Save inputs</button>
+        <label class="btn ghost file-btn">Open inputs<input type="file" id="file-load" accept="application/json,.json" hidden></label>
+        <button type="button" class="btn ghost" id="btn-reset">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="steps no-print" id="steps" aria-label="Questionnaire sections"></nav>
+
+    <form id="form" class="no-print" novalidate>
+      <div id="sections"></div>
+      <div class="form-footer">
+        <button type="button" class="btn ghost" id="btn-prev">Back</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="btn-next">Next</button>
+        <button type="submit" class="btn primary" id="btn-calc">Calculate efficiency</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" hidden>
+      <div class="results-head">
+        <div>
+          <h2>Results</h2>
+          <p class="muted" id="res-meta"></p>
+        </div>
+        <div class="actions no-print">
+          <div class="seg" id="period-toggle" role="tablist" aria-label="Period">
+            <button type="button" data-p="day">Day</button>
+            <button type="button" data-p="month">Month</button>
+            <button type="button" data-p="year" class="on">Year</button>
+          </div>
+          <button type="button" class="btn ghost" id="btn-csv">Export CSV</button>
+          <button type="button" class="btn ghost" id="btn-print">Print / PDF</button>
+          <button type="button" class="btn ghost" id="btn-edit">Edit inputs</button>
+        </div>
+      </div>
+
+      <div id="warnings"></div>
+      <div class="kpis" id="kpis"></div>
+
+      <div class="grid">
+        <article class="card"><h3>Boiler efficiency</h3><p class="cap" id="cap-gauge"></p><div class="chart" id="ch-gauge"></div></article>
+        <article class="card"><h3>Where the fuel energy goes</h3><p class="cap">Share of fuel heat input (GCV basis)</p><div class="chart" id="ch-donut"></div></article>
+        <article class="card wide"><h3>Energy flow</h3><p class="cap" id="cap-sankey"></p><div class="chart tall" id="ch-sankey"></div></article>
+        <article class="card"><h3>Heat losses ranked</h3><p class="cap">% of fuel heat input, indirect method</p><div class="chart" id="ch-losses"></div></article>
+        <article class="card"><h3>From 100% to efficiency</h3><p class="cap">Each loss deducted in turn</p><div class="chart" id="ch-waterfall"></div></article>
+        <article class="card wide"><h3>Energy consumption by period</h3><p class="cap">GJ, free scales per panel</p><div class="chart" id="ch-energy"></div></article>
+        <article class="card wide"><h3>Greenhouse gas emissions by period</h3><p class="cap">t CO₂e, free scales per panel. Biogenic CO₂ shown for reference and excluded from the total.</p><div class="chart" id="ch-ghg"></div></article>
+        <article class="card"><h3>GHG composition</h3><p class="cap" id="cap-ghgdonut"></p><div class="chart" id="ch-ghgdonut"></div></article>
+        <article class="card"><h3>Fuel, cost and emissions</h3><p class="cap" id="cap-period"></p><div class="table-wrap" id="tbl-period"></div></article>
+        <article class="card wide"><h3>Improvement potential</h3><p class="cap">Current vs achievable efficiency for each measure, recalculated with the heat loss method</p><div class="chart" id="ch-dumbbell"></div><div class="table-wrap" id="tbl-scen"></div></article>
+        <article class="card wide"><h3>Calculation details</h3><div class="table-wrap" id="tbl-details"></div></article>
+      </div>
+      <p class="muted small method">
+        Method: indirect efficiency = 100 − (dry flue gas + H₂ in fuel + moisture in fuel + moisture in air + CO + radiation &amp; convection + unburnt in fly ash + unburnt in bottom ash) losses, as in IS 8753 and BEE Guide Book 2, Chapter 2, on GCV basis.
+        CO₂ is computed from the fuel's burnt carbon; CH₄ and N₂O use IPCC 2006 default factors (kg/TJ, NCV basis) with AR5 GWPs (28, 265); electricity uses the CEA grid emission factor.
+        CO₂ from biomass is biogenic and reported separately. Results are an energy audit estimate, not a certified measurement.
+      </p>
+    </section>
+  </main>
+
+  <footer class="wrap foot muted small">Open source. Runs fully in your browser; no data leaves your computer.</footer>
+</body>
+</html>
